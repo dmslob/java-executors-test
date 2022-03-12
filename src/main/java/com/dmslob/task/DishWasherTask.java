@@ -1,10 +1,10 @@
-package com.luxoft.task;
+package com.dmslob.task;
 
-import static com.luxoft.utils.DishWashUtil.takeTimeToWork;
+import static com.dmslob.utils.DishWashUtil.takeTimeToWork;
 
 import java.util.concurrent.Callable;
 
-import com.luxoft.model.Dish;
+import com.dmslob.model.Dish;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,8 +30,10 @@ public class DishWasherTask implements Callable<Dish> {
 
 	private Dish wash() {
 		takeTimeToWork(TIME_TO_WASH_ONE_DISH);
+
 		log.info("{} has been washed by {}",
 				dish.getName(), Thread.currentThread().getName());
+
 		dish.setWashed(true);
 
 		return dish;

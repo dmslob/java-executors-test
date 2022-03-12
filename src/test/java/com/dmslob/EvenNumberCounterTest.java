@@ -1,4 +1,4 @@
-package com.luxoft;
+package com.dmslob;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -7,7 +7,7 @@ import java.util.concurrent.ForkJoinPool;
 
 import org.testng.annotations.Test;
 
-import com.luxoft.task.EvenNumberCounter;
+import com.dmslob.task.EvenNumberCounter;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,14 +18,16 @@ public class EvenNumberCounterTest {
 
 	@Test
 	public void should_count_even_numbers_by_ForkJoinPool() {
-		//given
+		// given
 		int[] array = givenRandomArray();
-		EvenNumberCounter evenNumberCounter = new EvenNumberCounter(array, 0, SIZE, THRESHOLD);
+		EvenNumberCounter evenNumberCounter =
+				new EvenNumberCounter(array, 0, SIZE, THRESHOLD);
 		ForkJoinPool pool = new ForkJoinPool();
 
-		//when
+		// when
 		Integer evenNumberCount = pool.invoke(evenNumberCounter);
-		log.info("Number of even numbers: {}", evenNumberCount);
+
+		// then
 		assertThat(evenNumberCount).isPositive();
 	}
 

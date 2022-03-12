@@ -1,10 +1,10 @@
-package com.luxoft.service;
+package com.dmslob.service;
 
 import java.util.List;
 import java.util.concurrent.Future;
 
-import com.luxoft.model.Dish;
-import com.luxoft.task.DishWasherTask;
+import com.dmslob.model.Dish;
+import com.dmslob.task.DishWasherTask;
 
 public interface DishWasher {
 	void wash(List<DishWasherTask> dishTasks);

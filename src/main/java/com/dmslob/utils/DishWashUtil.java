@@ -1,4 +1,4 @@
-package com.luxoft.utils;
+package com.dmslob.utils;
 
 public class DishWashUtil {
 	private DishWashUtil() {

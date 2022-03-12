@@ -1,12 +1,12 @@
-package com.luxoft.service;
+package com.dmslob.service;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import com.luxoft.model.Dish;
-import com.luxoft.task.DishWasherTask;
+import com.dmslob.model.Dish;
+import com.dmslob.task.DishWasherTask;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,7 +33,6 @@ public class DishWasherImpl implements DishWasher {
 			log.error("Washing dishes was interrupted due to {}", e.getMessage());
 		}
 		finally {
-			//executor.shutdown();
 			shutdownAndAwaitTermination();
 		}
 	}

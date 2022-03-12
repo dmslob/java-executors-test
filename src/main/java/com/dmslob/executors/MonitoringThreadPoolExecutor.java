@@ -1,4 +1,4 @@
-package com.luxoft.executors;
+package com.dmslob.executors;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -19,19 +19,19 @@ public class MonitoringThreadPoolExecutor extends ThreadPoolExecutor {
 	protected void afterExecute(Runnable r, Throwable t) {
 		super.afterExecute(r, t);
 		if (t != null) {
-			log.info("afterExecute with exception: {}", t.getMessage());
+			log.info("Exception after execution of task: {}.", t.getMessage());
 		}
 	}
 
 	@Override
 	protected void beforeExecute(Thread t, Runnable r) {
 		super.beforeExecute(t, r);
-		log.info("beforeExecute");
+		log.info("Before execution of task.");
 	}
 
 	@Override
 	protected void terminated() {
 		super.terminated();
-		log.info("terminated");
+		log.info("Executor has terminated.");
 	}
 }

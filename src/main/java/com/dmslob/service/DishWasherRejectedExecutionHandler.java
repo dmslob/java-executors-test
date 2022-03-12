@@ -1,4 +1,4 @@
-package com.luxoft.service;
+package com.dmslob.service;
 
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;

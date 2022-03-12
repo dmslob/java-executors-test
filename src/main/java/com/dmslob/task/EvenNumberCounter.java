@@ -1,4 +1,4 @@
-package com.luxoft.task;
+package com.dmslob.task;
 
 import java.util.concurrent.RecursiveTask;
 

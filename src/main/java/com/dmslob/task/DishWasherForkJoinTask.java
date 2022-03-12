@@ -1,13 +1,13 @@
-package com.luxoft.task;
+package com.dmslob.task;
 
-import static com.luxoft.utils.DishWashUtil.takeTimeToWork;
+import static com.dmslob.utils.DishWashUtil.takeTimeToWork;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.RecursiveAction;
 
-import com.luxoft.model.Dish;
+import com.dmslob.model.Dish;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -46,13 +46,14 @@ public class DishWasherForkJoinTask extends RecursiveAction {
 	private void wash() {
 		dishes.forEach(dish -> {
 			takeTimeToWork(TIME_TO_WASH_ONE_DISH);
+
 			String worker = Thread.currentThread().getName();
-			workers.add(worker);
 			log.info("[{}] has been washed by [{}-Daemon={}]\n",
 					dish.getName(),
 					worker,
 					Thread.currentThread().isDaemon()
 			);
+			workers.add(worker);
 			dish.setWashed(true);
 		});
 	}

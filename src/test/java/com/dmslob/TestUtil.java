@@ -1,4 +1,4 @@
-package com.luxoft;
+package com.dmslob;
 
 public class TestUtil {
 

@@ -1,6 +1,6 @@
-package com.luxoft;
+package com.dmslob;
 
-import static com.luxoft.TestUtil.delay;
+import static com.dmslob.TestUtil.delay;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,14 +29,14 @@ import java.util.stream.IntStream;
 import org.testng.annotations.Test;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.luxoft.executors.MonitoringThreadPoolExecutor;
-import com.luxoft.executors.ThreadExecutor;
-import com.luxoft.model.Dish;
-import com.luxoft.service.DishWasher;
-import com.luxoft.service.DishWasherImpl;
-import com.luxoft.service.DishWasherRejectedExecutionHandler;
-import com.luxoft.task.DishWasherForkJoinTask;
-import com.luxoft.task.DishWasherTask;
+import com.dmslob.executors.MonitoringThreadPoolExecutor;
+import com.dmslob.executors.ThreadExecutor;
+import com.dmslob.model.Dish;
+import com.dmslob.service.DishWasher;
+import com.dmslob.service.DishWasherImpl;
+import com.dmslob.service.DishWasherRejectedExecutionHandler;
+import com.dmslob.task.DishWasherForkJoinTask;
+import com.dmslob.task.DishWasherTask;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -52,6 +52,7 @@ public class DishWasherTest {
 	public void should_execute_new_threads() {
 		// given
 		ThreadExecutor executor = new ThreadExecutor();
+
 		// when
 		executor.execute(() -> log.info("{}", Thread.currentThread().getName()));
 		executor.execute(() -> log.info("{}", Thread.currentThread().getName()));
@@ -111,10 +112,7 @@ public class DishWasherTest {
 		// given
 		var cachedPool = Executors.newCachedThreadPool(THREAD_FACTORY);
 		Callable<String> task = () -> {
-			long oneHundredMicroSeconds = 100_000L;
-			long startedAt = System.nanoTime();
-			while ((System.nanoTime() - startedAt) <= oneHundredMicroSeconds) {
-			}
+			delay(1000L);
 			log.info("Task is done by {}", Thread.currentThread().getName());
 			return "Done";
 		};
@@ -169,18 +167,19 @@ public class DishWasherTest {
 
 	@Test
 	public void should_increment_pool_number() {
-		ExecutorService pool1 = Executors.newSingleThreadExecutor();
-		ExecutorService pool2 = Executors.newFixedThreadPool(3);
+		ExecutorService singleThreadExecutor = Executors.newSingleThreadExecutor();
+		ExecutorService fixedThreadPool = Executors.newFixedThreadPool(3);
 
-		pool1.execute(() -> log.info("{}", Thread.currentThread().getName()));
-		pool2.execute(() -> log.info("{}", Thread.currentThread().getName()));
-		pool2.execute(() -> log.info("{}", Thread.currentThread().getName()));
-		pool2.execute(() -> log.info("{}", Thread.currentThread().getName()));
+		singleThreadExecutor.execute(() -> log.info("{}", Thread.currentThread().getName()));
+
+		fixedThreadPool.execute(() -> log.info("{}", Thread.currentThread().getName()));
+		fixedThreadPool.execute(() -> log.info("{}", Thread.currentThread().getName()));
+		fixedThreadPool.execute(() -> log.info("{}", Thread.currentThread().getName()));
 
 		delay(1500L);
 
-		pool1.shutdown();
-		pool2.shutdown();
+		singleThreadExecutor.shutdown();
+		fixedThreadPool.shutdown();
 	}
 
 	@Test
@@ -266,7 +265,7 @@ public class DishWasherTest {
 
 		// when
 		assertThatThrownBy(() -> dishWasher.wash(dishTasks))
-				//then
+				// then
 				.isInstanceOf(RejectedExecutionException.class);
 	}
 
@@ -280,6 +279,7 @@ public class DishWasherTest {
 				MILLISECONDS, new ArrayBlockingQueue<>(2),
 				THREAD_FACTORY, new DishWasherRejectedExecutionHandler());
 		DishWasher dishWasher = new DishWasherImpl(executor);
+
 		// when
 		dishWasher.wash(dishTasks);
 
@@ -317,7 +317,7 @@ public class DishWasherTest {
 
 	@Test
 	public void should_cancel_running_task_when_mayInterruptIfRunning_is_true() {
-		//given
+		// given
 		Dish redPlate = new Dish("SMALL RED PLATE");
 		ExecutorService executor = Executors.newFixedThreadPool(3, THREAD_FACTORY);
 		DishWasherTask smallRedPlateTask =
@@ -326,10 +326,10 @@ public class DishWasherTest {
 		final Future<Dish> redPlateFuture = executor.submit(smallRedPlateTask);
 		delay(1000L);
 
-		//when
+		// when
 		boolean cancelled =
 				redPlateFuture.cancel(true);
-		//then
+		// then
 		assertThat(cancelled).isTrue();
 		assertThat(redPlateFuture.isCancelled()).isTrue();
 		assertThat(redPlateFuture.isDone()).isTrue();
@@ -342,7 +342,7 @@ public class DishWasherTest {
 	// TODO: Investigate
 	@Test
 	public void should_cancel_running_task_when_mayInterruptIfRunning_is_false() throws ExecutionException, InterruptedException {
-		//given
+		// given
 		Dish dish = new Dish("SMALL RED PLATE");
 		ExecutorService executor = Executors.newFixedThreadPool(2, THREAD_FACTORY);
 		final DishWasherTask smallRedPlateTask =
@@ -350,10 +350,11 @@ public class DishWasherTest {
 
 		Future<Dish> redPlateFuture = executor.submit(smallRedPlateTask);
 		delay(1000L);
-		//when
+
+		// when
 		boolean cancelled =
 				redPlateFuture.cancel(false);
-		//then
+		// then
 		assertThat(cancelled).isTrue();
 		assertThat(redPlateFuture.isCancelled()).isTrue();
 		assertThat(redPlateFuture.isDone()).isTrue();
@@ -373,7 +374,7 @@ public class DishWasherTest {
 	 */
 	@Test
 	public void should_catch_exception_on_execute() {
-		//given
+		// given
 		ThreadFactory threadFactory = new ThreadFactoryBuilder()
 				.setNameFormat("[Dish-Wash-Worker-%d]")
 				.setUncaughtExceptionHandler((t, e) ->
@@ -388,17 +389,19 @@ public class DishWasherTest {
 			log.warn(message);
 			throw new RuntimeException(message);
 		};
-		//when
+
+		// when
 		executorService.execute(command);
 		delay(1500L);
-		//then
-		//No exceptions
+
+		// then
+		// No exceptions
 		executorService.shutdown();
 	}
 
 	@Test
 	public void should_throw_exception_on_FutureTask() throws ExecutionException, InterruptedException {
-		//given
+		// given
 		var message = "RuntimeException from command";
 		ThreadFactory threadFactory = new ThreadFactoryBuilder()
 				.setNameFormat("[Dish-Wash-Worker-%d]")
@@ -414,11 +417,13 @@ public class DishWasherTest {
 		};
 		FutureTask<String> futureTask = new FutureTask<>(command, "Error");
 
-		//when
+		// when
 		Future<?> submittedTaskFuture = executorService.submit(futureTask);
 		delay(1500L);
 
 		String futureResult = (String) submittedTaskFuture.get();
+
+		// then
 		assertThat(futureResult).isNull();
 
 		assertThatThrownBy(futureTask::get)
@@ -506,9 +511,9 @@ public class DishWasherTest {
 				log.error("Error", e);
 			}
 		});
+
 		// then wait
 		// uncomment to check test execution result
-		//delay(300000L);
 		pool.shutdown();
 	}
 
@@ -537,6 +542,7 @@ public class DishWasherTest {
 			forkJoinPool.shutdownNow();
 		}
 		delay(1000L);
+
 		// then
 		assertThat(dishesToWash.stream().allMatch(Dish::isWashed)).isTrue();
 
